@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	userpb "github.com/luchanos/grpc_app/gen/go/user/v1"
+	wearablepb "github.com/luchanos/grpc_app/gen/go/wearable/v1"
 	"google.golang.org/grpc"
 	"log"
 	"net"
@@ -35,11 +36,8 @@ func main() {
 	}
 
 	grpcServer := grpc.NewServer()
+	wearableServer := &wearableServer{}
 	userpb.RegisterUserServiceServer(grpcServer, &userService{})
+	wearablepb.RegisterWearableServiceServer(grpcServer, wearableServer)
 	grpcServer.Serve(lis)
 }
-
-//type UserServiceServer interface {
-//	GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error)
-//	mustEmbedUnimplementedUserServiceServer()
-//}
