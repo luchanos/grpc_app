@@ -2,9 +2,11 @@ package main
 
 import (
 	"context"
+	"fmt"
 	userpb "github.com/luchanos/grpc_app/gen/go/user/v1"
 	wearablepb "github.com/luchanos/grpc_app/gen/go/wearable/v1"
 	"google.golang.org/grpc"
+	"io"
 	"log"
 	"net"
 )
@@ -36,8 +38,25 @@ func main() {
 	}
 
 	grpcServer := grpc.NewServer()
-	wearableServer := &wearableServer{}
+	wearableService := &wearableService{}
 	userpb.RegisterUserServiceServer(grpcServer, &userService{})
-	wearablepb.RegisterWearableServiceServer(grpcServer, wearableServer)
+	wearablepb.RegisterWearableServiceServer(grpcServer, wearableService)
 	grpcServer.Serve(lis)
+}
+
+func (w *wearableService) ConsumeBeatsPerMinute(stream wearablepb.WearableService_ConsumeBeatsPerMinuteServer) error {
+	var total int
+	for {
+		value, err := stream.Recv()
+		if err == io.EOF {
+			return stream.SendAndClose(&wearablepb.ConsumeBeatsPerMinuteResponse{
+				Total: uint32(total),
+			})
+		}
+		if err != nil {
+			return err
+		}
+		fmt.Println(value.GetMinute(), value.GetUuid(), value.GetValue())
+		total++
+	}
 }

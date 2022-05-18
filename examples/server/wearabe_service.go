@@ -8,11 +8,11 @@ import (
 	"time"
 )
 
-type wearableServer struct {
+type wearableService struct {
 	wearablepb.UnimplementedWearableServiceServer
 }
 
-func (w *wearableServer) BeatsPerMinute(req *wearablepb.BeatsPerMinuteRequest, stream wearablepb.WearableService_BeatsPerMinuteServer) error {
+func (w *wearableService) BeatsPerMinute(req *wearablepb.BeatsPerMinuteRequest, stream wearablepb.WearableService_BeatsPerMinuteServer) error {
 
 	for {
 		select {
